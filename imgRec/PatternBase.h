@@ -2,6 +2,8 @@
 
 #include <vector>
 #include <string>
+#include <cstdint>
+
 class PatternBase {
 private:
 	std::string patternsPath;

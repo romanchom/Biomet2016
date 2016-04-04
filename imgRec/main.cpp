@@ -276,37 +276,62 @@ int main()
 	if(!cap.isOpened())
 		return -1;
 	cv::Mat temp;
-	cv::Mat edges;
 	cv::Mat frame;
+	cv::Mat hsvFrame;
 	cv::namedWindow("preview",1);
 	cv::Vec3b min[9];
 	cv::Vec3b max[9];
+
+	cap >> frame;
+	int xPos[9], yPos[9];
+	for(int i = 0; i < 3; ++i){
+		for(int j = 0; j < 3; ++j){
+			int index = 3 * i + j;
+			xPos[index] = frame.cols * (4 + i) / 10;
+			yPos[index] = (frame.rows * 5 + frame.cols * (j - 1)) / 10;
+		}
+	}
+
 	while(true)	{
 		cap >> frame;
+
+		cv::cvtColor(frame, hsvFrame, cv::COLOR_BGR2HSV);
+		cv::GaussianBlur(hsvFrame, hsvFrame, cv::Size(5, 5), 0);
+		size_t w = frame.rows;
+		size_t h = frame.cols;
+		for(int i = 0; i < 9; ++i){
+			cv::Vec3b sample = hsvFrame.at<cv::Vec3b>(yPos[i], xPos[i]);
+
+			cv::circle(frame, cv::Point(xPos[i], yPos[i]), 5, frame.at<cv::Vec3b>(yPos[i], xPos[i]));
+
+			int tol = 10;
+			min[i] = sample - cv::Vec3b(tol, tol, tol);
+			min[i][2] = 50;
+			max[i] = sample + cv::Vec3b(tol, tol, tol);
+			max[i][2] = 255;
+			std::cout << "min: " << min[i] << " max " << max[i] << std::endl;
+		}
+
 		cv::imshow("preview", frame);
 		if(cv::waitKey(1) >= 0) {
-			cv::medianBlur(frame, frame, 25);
-			size_t w = frame.rows;
-			size_t h = frame.cols;
-			int i = 0;
-			for(double x = w * 4 / 10; x < w * 6 / 10; x += w / 10){
-				for(double y = h * 4 / 10; y < h * 6 / 10; y += h / 10){
-					cv::Vec3b sample = frame.at<cv::Vec3b>(x, y);
-					int tol = 25;
-					min[i] = sample - cv::Vec3b(tol, tol, tol);
-					max[i++] = sample + cv::Vec3b(tol, tol, tol);
-				}
-			}
+
 			break;
 		}
 	}
+	cv::Mat edges(frame.rows, frame.cols, CV_8UC1, cv::Scalar(0, 0, 0));
+
 	while(true){
 		cap >> frame;
+		cv::cvtColor(frame, hsvFrame, cv::COLOR_BGR2HSV);
 		edges = cv::Scalar(0, 0, 0);
 		for(int i = 0; i < 9; ++i){
-			cv::inRange(frame, min[i], max[i], temp);
+			cv::inRange(hsvFrame, min[i], max[i], temp);
 			cv::bitwise_or(temp, edges, edges);
 		}
+		int erosion = 15;
+		cv::erode(edges, edges, erosion);
+		cv::dilate(edges, edges, erosion);
+		cv::medianBlur(edges, edges, 15);
 		cv::imshow("preview", edges);
 		if(cv::waitKey(1) >= 0) break;
 
