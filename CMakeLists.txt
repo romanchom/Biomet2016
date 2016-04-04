@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+project( opencvtest CXX )
+find_package( OpenCV REQUIRED )
+aux_source_directory(. src)
+add_executable( opencvtest ${src} )
+target_link_libraries( opencvtest ${OpenCV_LIBS} )
