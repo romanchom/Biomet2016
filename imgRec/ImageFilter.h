@@ -8,13 +8,12 @@ private:
 	cv::VideoCapture cap;
 
 	int xPos[9], yPos[9];
-	cv::Vec3b min[9];
-	cv::Vec3b max[9];
-	cv::Mat frame;
+	int hue;
 	cv::Mat temp;
 	cv::Mat hsvFrame;
 
 public:
+	cv::Mat frame;
 	ImageFilter();
 	~ImageFilter();
 	void sampleTrackedColor();

@@ -8,10 +8,16 @@ private:
 
 public:
 	enum {
-		partialDesLen = 16,
-		descriptorLength = partialDesLen * 2, 
+		descriptorLength = 32, 
 	};
 	Descriptor(std::vector<cv::Point> & contour);
+	std::vector<cv::Point2d> posOfLength;
+	std::vector<double> curvatureOfLength;
 	cv::Point2d center;
 	double data[descriptorLength];
+
+	void relaxContour(int iterations);
+	void drawCurvature(cv::Mat & dst);
+	void drawSignature(cv::Mat & dst);
+	void drawDescriptor(cv::Mat & dst);
 };

@@ -219,58 +219,6 @@ void MouseCallback(int event, int x, int, int, void*)
 	}
 }
 
-void grabFromCamera(int cameraId)
-{
-	IplImage* pImage;
-	CvCapture* capturedDevice;
-	capturedDevice = cvCaptureFromCAM(CV_CAP_ANY);
-	if (capturedDevice != 0)
-	{
-		cvNamedWindow("Wejscie", 1);
-		cvNamedWindow("Rozpoznawanie", 1);
-		cvSetMouseCallback("Rozpoznawanie", MouseCallback, NULL);
-		do
-		{
-			pImage = cvQueryFrame(capturedDevice);
-			cvShowImage("Wejscie", pImage);
-			processImage(pImage, minHue, maxHue, 20, 50);
-		} while (cvWaitKey(20) == -1);
-		cvReleaseCapture(&capturedDevice);
-		cvDestroyWindow("Wejscie");
-		cvDestroyWindow("Rozpoznawanie");
-	} else
-	{
-		std::cout << "Problem z otwarciem dojscia do kamery." << std::endl;
-	}
-}
-
-
-void selectHue()
-{
-	unsigned int indx;
-	unsigned char* pData;
-	IplImage* pImgHSV;
-	pImgHSV = cvCreateImage(cvSize(540, 256), IPL_DEPTH_8U, 3);
-	pData = (unsigned char*)(pImgHSV->imageData);
-	for (unsigned int i = 0; i<540; i++)
-	{
-		for (unsigned int j = 0; j<256; j++)
-		{
-			indx = 3 * i + j*pImgHSV->widthStep;
-			pData[indx + 0] = i / 3;
-			pData[indx + 1] = 255;
-			pData[indx + 2] = 200;
-		}
-	}
-	cvCvtColor(pImgHSV, pImgHSV, CV_HSV2RGB);
-	cvNamedWindow("Wybor HSV", 1);
-	cvSetMouseCallback("Wybor HSV", MouseCallback, NULL);
-	cvShowImage("Wybor HSV", pImgHSV);
-	cvWaitKey(0);
-	cvDestroyWindow("Wybor HSV");
-	cvReleaseImage(&pImgHSV);
-}
-
 */
 int main()
 {
@@ -287,9 +235,14 @@ int main()
 				best = &contour;
 				bestLength = length;
 			}
-			if(best) Descriptor desc(*best);
 		}
-
+		if (best) {
+			Descriptor desc(*best);
+			desc.drawCurvature(filter.frame);
+			desc.drawSignature(filter.frame);
+			desc.drawDescriptor(filter.frame);
+		}
+		cv::imshow("preview", filter.frame);
 	}while(!filter.shouldExit());
 	return 0;
 }
