@@ -9,7 +9,7 @@ private:
 	std::string patternsPath;
 	std::string classesPath;
 	enum {
-		descriptorLength = 16,
+		descriptorLength = 32,
 	};
 	struct Pattern {
 		double descriptor[descriptorLength];
@@ -27,5 +27,5 @@ public:
 	PatternBase(const std::string & patterns, const std::string & classes);
 	~PatternBase();
 	void addNew();
-	const std::string & classifyObject(double * desc);
+	const std::string & classifyObject(double * desc, double tolerance);
 };

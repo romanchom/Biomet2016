@@ -4,33 +4,34 @@
 #include <complex>
 
 Descriptor::Descriptor(std::vector<cv::Point> & contour){
-	cv::Point last = contour.front();
-	center = last;
-	for(auto it = contour.begin() + 1; it != contour.end(); ++it){
-		cv::Point diff = *it - last;
-		double inc = diff.x * diff.x + diff.y * diff.y;
-
-		inc = 1.0 / ( round(2.0 * sqrt(inc)));
-		for(double t = 0; t < 1; t += inc){
-			cv::Point2d p = diff;
-			p *= t;
-			p += cv::Point2d(last);
+	cv::Point2d first = contour[0];
+	cv::Point2d second = contour[1];
+	double length = 0;
+	size_t index = 1;
+	do{
+		double t = posOfLength.size() - length;
+		if(t > 1){
+			cv::Point v = first - second;
+			double len = sqrt(v.dot(v));
+			//if(len != 1) std::cout << "asd" << len;
+			length += len;
+			first = second;
+			index++;
+			second = contour[index % contour.size()];
+		}else{
+			cv::Point2d p = first * t + second * (1 - t);
 			posOfLength.push_back(p);
 		}
-		center += cv::Point2d(*it);
-		last = *it;
-	}
-	center /= (double) contour.size();
+	}while(index <= contour.size());
 
-	relaxContour(1);
+	relaxContour(10);
 
 	const size_t count = posOfLength.size();
-	size_t optimalLength = cv::getOptimalDFTSize(count);
+	size_t optimalLength = count;//cv::getOptimalDFTSize(count);
 
-	//std::vector<double> curvatureOfLength;
 	curvatureOfLength.resize(optimalLength);
 
-	const size_t boxSize = 45;
+	const size_t boxSize = 50;
 	for (size_t i = 0; i < count; ++i) {
 		size_t indexLow = (i - boxSize + count) % count;
 		size_t indexHigh = (i + boxSize + count) % count;
@@ -41,10 +42,13 @@ Descriptor::Descriptor(std::vector<cv::Point> & contour){
 
 		cv::Point2d diff1 = mid - low;
 		cv::Point2d diff2 = hi - mid;
+		diff2 = cv::Point2d(diff2.y, -diff2.x);
+		double len = diff1.dot(diff1);
+		len *= diff2.dot(diff2);
+		len = sqrt(len);
 
-		double val = atan2(diff1.x, diff1.y) - atan2(diff2.x, diff2.y);
-		if (val < -M_PI) val += 2 * M_PI;
-		if (val > M_PI) val -= 2 * M_PI;
+		double val = diff1.dot(diff2) / len;
+		//val = asin(val);
 
 		curvatureOfLength[i] = val;
 	}
@@ -71,7 +75,7 @@ Descriptor::Descriptor(std::vector<cv::Point> & contour){
 		std::cout << data[i] << ", ";
 	}
 	std::cout << std::endl;
-	//std::cin >> a;*/ 
+	//std::cin >> a;*/
 }
 
 void Descriptor::relaxContour(int iterations) {
@@ -106,7 +110,7 @@ void Descriptor::drawSignature(cv::Mat & dst) {
 	double last = curvatureOfLength[0];
 	size_t count = curvatureOfLength.size();
 	double x = 200.0 / count;
-	double y = -10;
+	double y = -30;
 
 	for (int i = 1; i < count; ++i) {
 		cv::line(dst, ll + cv::Point2d((i - 1) * x, last * y), ll + cv::Point2d(i * x, curvatureOfLength[i] * y), white);

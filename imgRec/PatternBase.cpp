@@ -37,15 +37,17 @@ struct mapMax
     }
 };
 
-const std::string & PatternBase::classifyObject(double* desc){
+const std::string & PatternBase::classifyObject(double* desc, double tolerance){
 	std::vector<std::pair<double, uint32_t>> results;
 	for (int i = 0; i < patterns.size(); i++) {
-		double v = 0.0;
+		double distance = 0.0;
 		Pattern & p = patterns[i];
 		for (int j = 0; j < descriptorLength; j++) {
-			v += (p.descriptor[j] - desc[j])*(p.descriptor[j] - desc[j]);
+			double diff = p.descriptor[j] - desc[j];
+			distance += diff * diff;
 		}
-		results.push_back(std::make_pair(v, p.classId));
+		if(distance < tolerance)
+			results.push_back(std::make_pair(distance, p.classId));
 	}
 	if(shouldAddPattern){
 		std::string className;
@@ -108,7 +110,8 @@ void PatternBase::writeClasses(){
 
 PatternBase::PatternBase(const std::string & patterns, const std::string & classes) :
 	patternsPath(patterns),
-	classesPath(classes)
+	classesPath(classes),
+	shouldAddPattern(false)
 {
 	readPatterns();
 	readClasses();

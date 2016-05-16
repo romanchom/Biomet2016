@@ -55,18 +55,25 @@ void ImageFilter::getTrackedContours(){
 	cv::cvtColor(hsvFrame, hsvFrame, cv::COLOR_BGR2HSV_FULL);
 	std::vector<cv::Mat> chs;
 	split(hsvFrame, chs);
+	cv::add(50, chs[1], chs[1]);
+	cv::add(50, chs[2], chs[2]);
+	cv::multiply(chs[1], chs[2], temp, 1.0 / 255);
+	cv::subtract(255, temp, hsvFrame);
 
-	cv::absdiff(chs[0], hue, temp);
+	chs[0] = chs[0] + (128 - hue); // add without saturation, aka. modulo add, aka. rotate hue
+
+	cv::absdiff(chs[0], 128, temp);
+	cv::multiply(hsvFrame, temp, temp);
 
 	//cv::GaussianBlur(temp, temp, cv::Size(5, 5), 0);
-	cv::medianBlur(temp, temp, 5);
+	//cv::medianBlur(temp, temp, 5);
 
-	cv::cvtColor(temp, frame, cv::COLOR_GRAY2BGR);
 	//cv::cvtColor(temp, frame, cv::COLOR_GRAY2BGR);
 	//cv::divide(temp, chs[1], temp);   // t = diff / sat
-	cv::threshold(temp, edges, 10, 255, cv::THRESH_BINARY_INV);
-	cv::medianBlur(edges, edges, 5);
-	//cv::erode(edges, edges, cv::Mat(), cv::Point(-1, -1), 3);
+	cv::threshold(temp, edges, 200, 255, cv::THRESH_BINARY_INV);
+	cv::medianBlur(edges, edges, 7);
+	cv::dilate(edges, edges, cv::Mat(), cv::Point(-1, -1), 2);
+	cv::cvtColor(edges, frame, cv::COLOR_GRAY2BGR);
 	//cv::cvtColor(edges, frame, cv::COLOR_GRAY2BGR);
 
 
