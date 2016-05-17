@@ -7,12 +7,16 @@ ImageFilter::ImageFilter() :
 	cap(0)
 {
 	cv::namedWindow("preview",1);
+
+	/*cv::namedWindow("hue", 1);
+	cv::namedWindow("sat", 1);
+	cv::namedWindow("val", 1);*/
 	cap >> frame;
 	for(int i = 0; i < 3; ++i){
 		for(int j = 0; j < 3; ++j){
 			int index = 3 * i + j;
-			xPos[index] = frame.cols * (9 + i) / 20;
-			yPos[index] = (frame.rows * 10 + frame.cols * (j - 1)) / 20;
+			xPos[index] = frame.cols * (19 + i) / 40;
+			yPos[index] = (frame.rows * 20 + frame.cols * (j - 1)) / 40;
 		}
 	}
 }
@@ -30,12 +34,19 @@ void ImageFilter::sampleTrackedColor(){
 		size_t w = frame.rows;
 		size_t h = frame.cols;
 		hue = 0;
+		sat = 0;
+		val = 0;
 		for(int i = 0; i < 9; ++i){
 			cv::Vec3b sample = hsvFrame.at<cv::Vec3b>(yPos[i], xPos[i]);
+			cv::Vec3b rgbSample = frame.at<cv::Vec3b>(yPos[i], xPos[i]);
 			cv::circle(frame, cv::Point(xPos[i], yPos[i]), 5, cv::Scalar(255, 255, 255));
 			hue += sample[0];
+			sat += sample[1];
+			val += sample[2];
 		}
 		hue /= 9;
+		sat /= 9;
+		val /= 9;
 		cv::imshow("preview", frame);
 		if(cv::waitKey(1) >= 0) {
 			break;
@@ -43,40 +54,59 @@ void ImageFilter::sampleTrackedColor(){
 	}
 }
 
+void closeness(cv::Mat & a, int v) {
+	size_t c = a.rows * a.cols;
+	unsigned char * p = a.data;
+	unsigned char * e = p + c;
+	do {
+		*p = std::max(0, 255 - abs(*p - v) * 3);
+		++p;
+	} while (p != e);
+}
+
+void hueCloseness(cv::Mat & a, int v) {
+	size_t c = a.rows * a.cols;
+	unsigned char * p = a.data;
+	unsigned char * e = p + c;
+	do {
+		int d = *p;
+		d = (unsigned char) (d + v - 128);
+		d = std::abs(128 - d);
+		d = 255 - d * 2;
+		*p = d;
+		++p;
+	} while (p != e);
+}
+
+
 void ImageFilter::getTrackedContours(){
 	cv::Mat edges(frame.rows, frame.cols, CV_8UC1, cv::Scalar(0, 0, 0));
-	cv::Mat temp(frame.rows, frame.cols, CV_8UC1, cv::Scalar(0, 0, 0));
 
 	cap >> frame;
-
-	//cv::boxFilter(frame, hsvFrame, -1, cv::Size(3, 3));
-	cv::medianBlur(frame, hsvFrame, 5);
-
+	
+	cv::medianBlur(frame, hsvFrame, 3);
 	cv::cvtColor(hsvFrame, hsvFrame, cv::COLOR_BGR2HSV_FULL);
 	std::vector<cv::Mat> chs;
 	split(hsvFrame, chs);
-	cv::add(50, chs[1], chs[1]);
-	cv::add(50, chs[2], chs[2]);
-	cv::multiply(chs[1], chs[2], temp, 1.0 / 255);
-	cv::subtract(255, temp, hsvFrame);
 
-	chs[0] = chs[0] + (128 - hue); // add without saturation, aka. modulo add, aka. rotate hue
-
-	cv::absdiff(chs[0], 128, temp);
-	cv::multiply(hsvFrame, temp, temp);
-
-	//cv::GaussianBlur(temp, temp, cv::Size(5, 5), 0);
-	//cv::medianBlur(temp, temp, 5);
-
-	//cv::cvtColor(temp, frame, cv::COLOR_GRAY2BGR);
-	//cv::divide(temp, chs[1], temp);   // t = diff / sat
-	cv::threshold(temp, edges, 200, 255, cv::THRESH_BINARY_INV);
-	cv::medianBlur(edges, edges, 7);
-	cv::dilate(edges, edges, cv::Mat(), cv::Point(-1, -1), 2);
-	cv::cvtColor(edges, frame, cv::COLOR_GRAY2BGR);
-	//cv::cvtColor(edges, frame, cv::COLOR_GRAY2BGR);
+	hueCloseness(chs[0], hue); 
+	closeness(chs[1], sat);
+	closeness(chs[2], val);
+	/*cv::imshow("hue", chs[0]);
+	cv::imshow("sat", chs[1]);
+	cv::imshow("val", chs[2]);*/
 
 
+	cv::multiply(chs[0], chs[1], temp, 1.0 / 255);
+	cv::multiply(temp, chs[2], temp, 1.8 / 255);
+	cv::cvtColor(temp, frame, cv::COLOR_GRAY2BGR);
+
+
+	cv::threshold(temp, edges, 128, 255, cv::THRESH_BINARY);
+	cv::medianBlur(edges, edges, 3);
+
+	//cv::erode(edges, edges, cv::Mat(), cv::Point(-1, -1), 2);
+	//cv::dilate(edges, edges, cv::Mat(), cv::Point(-1, -1), 2);
 
 	cv::Canny(edges, edges, 0, 255, 3);
 
@@ -84,15 +114,11 @@ void ImageFilter::getTrackedContours(){
 
 	cv::addWeighted(frame, 1, hsvFrame, 1, 0, frame);
 
-	//cv::imshow("preview", frame);
-
 	std::vector<cv::Vec4i> hierarchy;
-
-	std::vector<cv::Point> * best;
-	uint64_t bestLength = 0;
-
 	cv::findContours(edges, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE );
 }
+
+
 
 bool ImageFilter::shouldExit(){
 	return cv::waitKey(1) >= 0;

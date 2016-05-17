@@ -16,6 +16,7 @@
     <ClCompile Include="C:\Users\Roman\Documents\Biomet2016\imgRec\PatternBase.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="GestureEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\Users\Roman\Documents\Biomet2016\imgRec\CMakeLists.txt" />
@@ -41,5 +42,6 @@
     <ClInclude Include="PatternBase.h">
       <Filter>Headers</Filter>
     </ClInclude>
+    <ClInclude Include="GestureEngine.h" />
   </ItemGroup>
 </Project>

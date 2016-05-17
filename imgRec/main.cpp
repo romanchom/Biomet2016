@@ -4,10 +4,13 @@
 
 #include "PatternBase.h"
 #include "Descriptor.h"
+#include "GestureEngine.h"
+
 
 int main()
-{
+{	
 	PatternBase base("patterns.txt", "classes.txt");
+	GestureEngine gestureEngine;
 
 	ImageFilter filter;
 	filter.sampleTrackedColor();
@@ -25,13 +28,15 @@ int main()
 		}
 		char key = cv::waitKey(1);
 		if(key == 'q') break;
-		if (best) {
+		if (bestLength > 200) {
 			Descriptor desc(*best);
 			desc.drawCurvature(filter.frame);
 			desc.drawSignature(filter.frame);
 			desc.drawDescriptor(filter.frame);
 			if(key == 'a') base.addNew();
-			std::cout << base.classifyObject(desc.data, 5.0) << std::endl;
+			std::string reco = base.classifyObject(desc.data, 2);
+			std::cout << reco << std::endl;
+			gestureEngine.processGesture(reco);
 		}
 		cv::imshow("preview", filter.frame);
 	}while(true);

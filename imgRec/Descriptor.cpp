@@ -62,20 +62,10 @@ Descriptor::Descriptor(std::vector<cv::Point> & contour){
 		data[i] = sqrt(fourier[b + 0] * fourier[b + 0] + fourier[b + 1] * fourier[b + 1]) * i;
 		sum = std::max(data[i], sum);
 	}
-	//sum = descriptorLength / sum;
+
 	for(int i = 0; i < descriptorLength; ++i){
 		data[i] /= sum;
-		//data[i] = log(data[i]);
 	}
-
-	/*std::cout << "Fourier Length " << fourier.size() << std::endl;
-	std::cin >> a;
-
-	for(int i = 0; i < 16; ++i){
-		std::cout << data[i] << ", ";
-	}
-	std::cout << std::endl;
-	//std::cin >> a;*/
 }
 
 void Descriptor::relaxContour(int iterations) {

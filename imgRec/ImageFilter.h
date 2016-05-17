@@ -9,11 +9,14 @@ private:
 
 	int xPos[9], yPos[9];
 	int hue;
+	int sat;
+	int val;
+
 	cv::Mat temp;
 	cv::Mat hsvFrame;
-
 public:
 	cv::Mat frame;
+
 	ImageFilter();
 	~ImageFilter();
 	void sampleTrackedColor();

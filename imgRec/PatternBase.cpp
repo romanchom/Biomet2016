@@ -37,7 +37,7 @@ struct mapMax
     }
 };
 
-const std::string & PatternBase::classifyObject(double* desc, double tolerance){
+const std::string & PatternBase::classifyObject(double * desc, double tolerance) {
 	std::vector<std::pair<double, uint32_t>> results;
 	for (int i = 0; i < patterns.size(); i++) {
 		double distance = 0.0;
@@ -46,23 +46,28 @@ const std::string & PatternBase::classifyObject(double* desc, double tolerance){
 			double diff = p.descriptor[j] - desc[j];
 			distance += diff * diff;
 		}
-		if(distance < tolerance)
+		if (distance < tolerance)
 			results.push_back(std::make_pair(distance, p.classId));
 	}
-	if(shouldAddPattern){
+	if (shouldAddPattern) {
 		std::string className;
 		std::getline(std::cin, className);
 		addPattern(desc, className);
 		shouldAddPattern = false;
 	}
 	std::sort(results.begin(), results.end(), cmpDesc);
-	results.resize(5);
+	//results.resize(5);
 	std::map<int, int> count;
-    for (auto & v : results)
-        ++count[v.second];
+	for (auto & v : results)
+		++count[v.second];
 
-    size_t id = std::max_element(count.begin(), count.end(), mapMax())->first;
-	return classes[id];
+	if (count.size() > 0) {
+		size_t id = std::max_element(count.begin(), count.end(), mapMax())->first;
+		return classes[id];
+	} else {
+		static std::string unknown("UNKNOWN");
+		return unknown;
+	}
 }
 
 void PatternBase::readPatterns(){
