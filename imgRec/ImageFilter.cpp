@@ -29,7 +29,8 @@ void ImageFilter::sampleTrackedColor(){
 	while(true)	{
 		cap >> frame;
 
-		cv::cvtColor(frame, hsvFrame, cv::COLOR_BGR2HSV_FULL);
+		cv::medianBlur(frame, hsvFrame, 7);
+		cv::cvtColor(hsvFrame, hsvFrame, cv::COLOR_BGR2HSV_FULL);
 		cv::GaussianBlur(hsvFrame, hsvFrame, cv::Size(5, 5), 0);
 		size_t w = frame.rows;
 		size_t h = frame.cols;
@@ -70,7 +71,7 @@ void hueCloseness(cv::Mat & a, int v) {
 	unsigned char * e = p + c;
 	do {
 		int d = *p;
-		d = (unsigned char) (d + v - 128);
+		d = (unsigned char) (d - v - 128);
 		d = std::abs(128 - d);
 		d = 255 - d * 2;
 		*p = d;
@@ -94,7 +95,7 @@ void ImageFilter::getTrackedContours(){
 	closeness(chs[2], val);
 	/*cv::imshow("hue", chs[0]);
 	cv::imshow("sat", chs[1]);
-	cv::imshow("val", chs[2]);*/
+	cv::imshow("val", chs[2]);//*/
 
 
 	cv::multiply(chs[0], chs[1], temp, 1.0 / 255);

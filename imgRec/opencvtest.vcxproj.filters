@@ -19,9 +19,6 @@
     <ClCompile Include="GestureEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\Users\Roman\Documents\Biomet2016\imgRec\CMakeLists.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Filter Include="Headers">
       <UniqueIdentifier>{8ea32095-f374-4b9d-916d-2cc6ae4a70e8}</UniqueIdentifier>
     </Filter>
