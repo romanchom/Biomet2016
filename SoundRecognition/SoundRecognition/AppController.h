@@ -19,6 +19,10 @@ private:
 	const char CH_SELECT_LIST = '3';
 	const char CH_SELECT_EXIT = '4';
 
+	const std::string CLIPS_PATH = ".\\Samples\\";
+
+	const bool SHOW_PORTAUDIO_INIT_INFO = false;
+
 #pragma endregion
 
 #pragma region enum
@@ -55,6 +59,9 @@ private:
 	inline void ClearErrorString();
 	inline void SetErrorString(std::string str);
 	inline bool CheckIfNameIsUnique(const std::string* const str);
+
+	inline void PopulateCollectionFromDisk();
+	inline void SaveToDiskAndDestroyCollection();
 
 #pragma endregion
 

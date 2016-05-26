@@ -7,9 +7,15 @@
 
 #include "targetver.h"
 
+#include <Windows.h>
 #include <stdio.h>
 #include <tchar.h>
 #include <iostream>
 #include <conio.h>
 #include <vector>
 #include <string>
+#include <sstream>
+#include <iterator>
+
+#include "Include\portaudio.h"
+#include "Include\sndfile.h"

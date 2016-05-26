@@ -15,8 +15,23 @@ AppController::~AppController()
 
 void AppController::Initialize()
 {
+	// initializing variables
+
 	_mode = MENU;
 	_working = true;
+
+	// loading all samples from folder to collection
+
+	PopulateCollectionFromDisk();
+
+	// load PortAudio
+	Pa_Initialize();
+
+	if (SHOW_PORTAUDIO_INIT_INFO)
+	{
+		std::cout << "PortAudio Initialized. Press any key to continue.";
+		while (!_kbhit());
+	}
 }
 
 void AppController::Run()
@@ -86,12 +101,12 @@ void AppController::Run()
 			// here will recording start
 
 			AudioClip* ac = new AudioClip();
-			ac->InitializeFromMic(&newName);
+			ac->InitializeFromMic(&newName, &CLIPS_PATH);
 
 			bool esc = false;
 			while (true)
 			{
-				while (!kbhit());
+				while (!_kbhit());
 				selection = _getch();
 
 				if (selection == CH_ESC)
@@ -128,7 +143,7 @@ void AppController::Run()
 
 			while (true)
 			{
-				while (!kbhit());
+				while (!_kbhit());
 				selection = _getch();
 
 				if (selection == CH_NO)
@@ -153,12 +168,12 @@ void AppController::Run()
 
 			std::string tempName = "REC_CLIP";
 			AudioClip* ac = new AudioClip();
-			ac->InitializeFromMic(&tempName);
+			ac->InitializeFromMic(&tempName, &CLIPS_PATH);
 
 			bool esc = false;
 			while (true)
 			{
-				while (!kbhit());
+				while (!_kbhit());
 				selection = _getch();
 
 				if (selection == CH_ESC)
@@ -191,7 +206,7 @@ void AppController::Run()
 			std::string temp = "Not implemented";
 			PrintRecognizeEnd(&temp);
 
-			while (!kbhit());
+			while (!_kbhit());
 			selection = _getch();
 
 			if (selection == CH_ESC)
@@ -221,6 +236,9 @@ void AppController::Run()
 
 void AppController::Shutdown()
 {
+	Pa_Terminate();
+
+	SaveToDiskAndDestroyCollection();
 }
 
 void AppController::PrintMenu()
@@ -305,4 +323,55 @@ inline bool AppController::CheckIfNameIsUnique(const std::string * const str)
 		}
 	}
 	return true;
+}
+
+inline void AppController::PopulateCollectionFromDisk()
+{
+	std::wstring path(CLIPS_PATH.begin(), CLIPS_PATH.end());
+	path += L"*";
+	HANDLE hFind = INVALID_HANDLE_VALUE;
+	WIN32_FIND_DATA fData;
+
+	hFind = FindFirstFile(path.c_str(), &fData);
+
+	if (hFind == INVALID_HANDLE_VALUE)
+	{
+		return;
+	}
+
+	do
+	{
+
+		std::wstring name = fData.cFileName;
+		std::string sName(name.begin(), name.end());
+		std::istringstream iss(sName);
+		std::vector<std::string> sSplit;
+		std::string item;
+		while (std::getline(iss, item, '.'))
+		{
+			sSplit.push_back(item);
+		}
+		std::string ext = sSplit[sSplit.size() - 1];
+		if (ext == "wav")
+		{
+			AudioClip* ac = new AudioClip();
+			std::string filePath = CLIPS_PATH + sName;
+			ac->InitializeFromFile(&sSplit[0], &filePath);
+			_clips.push_back(ac);
+		}
+	} while (FindNextFile(hFind, &fData) != 0);
+}
+
+inline void AppController::SaveToDiskAndDestroyCollection()
+{
+	for (std::vector<AudioClip*>::iterator it = _clips.begin(); it != _clips.end(); ++it)
+	{
+		if (!(*it)->GetWasLoadedFromFile())
+		{
+			(*it)->SaveToFileAudio();
+		}
+		(*it)->Shutdown();
+		delete (*it);
+	}
+	_clips.clear();
 }

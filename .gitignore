@@ -3,3 +3,8 @@ imgRec/opencvtest.dir/
 imgRec/CMakeFiles/
 SoundRecognition/ipch/SOUNDRECOGNITION-dacacd3/SOUNDRECOGNITION-429a5a76.ipch
 *.db
+*.tlog
+SoundRecognition/Debug/
+SoundRecognition/Release/
+SoundRecognition/SoundRecognition/Release/
+SoundRecognition/SoundRecognition/Samples/desktop.ini
