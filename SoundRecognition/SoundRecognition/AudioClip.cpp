@@ -4,6 +4,7 @@
 
 AudioClip::AudioClip()
 {
+	ZeroMemory(&_dataInfo, sizeof(_dataInfo));
 }
 
 
@@ -19,6 +20,25 @@ void AudioClip::InitializeFromMic(const std::string* const name, const std::stri
 
 	PaDeviceIndex mic = Pa_GetDefaultInputDevice();
 	const PaDeviceInfo* info = Pa_GetDeviceInfo(mic);
+
+	PaStreamParameters params;
+	ZeroMemory(&params, sizeof(PaStreamParameters));
+	params.channelCount = DESIRED_CHANNELS;
+	params.device = mic;
+	params.sampleFormat = DESIRED_FORMAT_PA;
+	params.suggestedLatency = info->defaultLowInputLatency;
+
+	PaStreamFlags flags;
+	ZeroMemory(&flags, sizeof(PaStreamFlags));
+	flags = paClipOff | paDitherOff;
+
+	_dataInfo.channels = DESIRED_CHANNELS;
+	_dataInfo.samplerate = DESIRED_SAMPLERATE_HZ;
+	_dataInfo.format = DESIRED_FORMAT;
+
+	Pa_OpenStream(&_streamPtr, &params, NULL, DESIRED_SAMPLERATE_HZ, FRAMES_PER_BUFFER, 
+					flags, StreamCallback, (void*)this);
+	Pa_StartStream(_streamPtr);
 }
 
 void AudioClip::InitializeFromFile(const std::string* const name, const std::string * const fullFilePath)
@@ -46,6 +66,11 @@ void AudioClip::InitializeFromFile(const std::string* const name, const std::str
 
 void AudioClip::SaveToFileAudio()
 {
+	if (_dataSize == 0 || _data.size() == 0)
+	{
+		return;
+	}
+
 	_dataInfo.channels = DESIRED_CHANNELS;
 	_dataInfo.format = DESIRED_FORMAT;
 	_dataInfo.samplerate = DESIRED_SAMPLERATE_HZ;
@@ -58,10 +83,37 @@ void AudioClip::SaveToFileAudio()
 
 void AudioClip::StopInitializingFromMic()
 {
+	Pa_StopStream(_streamPtr);
+	Pa_CloseStream(_streamPtr);
 }
 
 void AudioClip::Shutdown()
 {
+
+}
+
+int AudioClip::StreamCallback(const void * input, void * output, unsigned long frameCount, const PaStreamCallbackTimeInfo * timeInfo, PaStreamCallbackFlags statusFlags, void * userData)
+{
+	AudioClip* instance = (AudioClip*)userData;
+
+	// cause we have non-interlaved one channel input
+	const short* dataPtr = ((const short**)input)[0];
+
+	if (statusFlags != 0)
+	{
+		std::cout << statusFlags << std::endl;
+		return paAbort;
+	}
+
+	for (unsigned long i = 0; i < frameCount; ++i)
+	{
+		instance->_data.push_back(dataPtr[i]);
+	}
+
+	instance->_dataInfo.frames += frameCount;
+	instance->_dataSize = instance->_dataInfo.frames;
+
+	return paContinue;
 }
 
 void AudioClip::ToString(std::string * const str)

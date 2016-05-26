@@ -9,6 +9,8 @@ protected:
 	const int DESIRED_CHANNELS = 1;
 	const int DESIRED_SAMPLERATE_HZ = 44100;
 	const int DESIRED_FORMAT = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+	const int DESIRED_FORMAT_PA = paInt16 | paNonInterleaved; 
+	const int FRAMES_PER_BUFFER = 0;
 
 #pragma endregion
 
@@ -19,8 +21,16 @@ protected:
 	bool _wasLoadedFromFile = false;
 
 	std::vector<short> _data;
-	unsigned long _dataSize;
+	unsigned long _dataSize = 0;
 	SF_INFO _dataInfo;
+
+	PaStream* _streamPtr = nullptr;
+
+#pragma endregion
+
+#pragma region functionsProtected
+
+	static int StreamCallback(const void *input, void *output, unsigned long frameCount, const PaStreamCallbackTimeInfo *timeInfo, PaStreamCallbackFlags statusFlags, void *userData);
 
 #pragma endregion
 
