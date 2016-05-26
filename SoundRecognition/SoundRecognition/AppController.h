@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Chart.h"
+
 #define ClearScreen() system("cls")
 
 class AudioClip;
@@ -43,6 +45,7 @@ private:
 	std::string _errString;
 	MenuMode _mode;
 	std::vector<AudioClip*> _clips;
+	Chart _chart;
 
 #pragma endregion
 

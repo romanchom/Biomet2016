@@ -54,9 +54,12 @@ public:
 
 #pragma region Getters
 
-	std::string GetName() { return _name; }
-	std::string GetFullFilePath() { return _fullFilePath; }
+	const std::string* const GetName() { return &_name; }
+	const std::string* const GetFullFilePath() { return &_fullFilePath; }
 	bool GetWasLoadedFromFile() { return _wasLoadedFromFile; }
+	const std::vector<short>* const GetDataBufferPtr() { return &_data; }
+	unsigned long GetDataSize() { return _dataSize; }
+	int GetSampleRate() { return _dataInfo.samplerate; }
 
 #pragma endregion
 

@@ -149,12 +149,15 @@
   <ItemGroup>
     <ClInclude Include="AppController.h" />
     <ClInclude Include="AudioClip.h" />
+    <ClInclude Include="Chart.h" />
+    <ClInclude Include="gnuplot_i.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AppController.cpp" />
     <ClCompile Include="AudioClip.cpp" />
+    <ClCompile Include="Chart.cpp" />
     <ClCompile Include="SoundRecognition.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

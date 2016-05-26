@@ -219,8 +219,28 @@ void AppController::Run()
 		case AppController::LIST:
 		{
 			PrintClipCollection();
-			while (!_kbhit());
-			selection = _getch();
+
+			int id = -1;
+			std::string input;
+			int siz = _clips.size();
+			while (true)
+			{
+				std::cin.clear();
+				std::cin >> input;
+				char* p;
+				id = std::strtol(input.c_str(), &p, 10);
+
+				if (!(*p) && id >= 0 && id < _clips.size())
+				{
+					AudioClip* first = _clips[id];
+					_chart.Initialize(first->GetDataBufferPtr(), (double)first->GetDataSize() / (double)first->GetSampleRate(), first->GetName());
+					_chart.Draw();
+				}
+				else
+				{
+					break;
+				}
+			}
 			_mode = MENU;
 		}
 		break;
@@ -236,6 +256,7 @@ void AppController::Run()
 
 void AppController::Shutdown()
 {
+	_chart.Shutdown();
 	Pa_Terminate();
 
 	SaveToDiskAndDestroyCollection();
@@ -286,13 +307,13 @@ inline void AppController::PrintClipCollection()
 	for (int i = 0; i < clipCount; ++i)
 	{
 		_clips[i]->ToString(&tmp);
-		std::cout << tmp << std::endl;
+		std::cout << "[" << i << "]" << std::endl << tmp << std::endl;
 		tmp.clear();
 	}
 
 	std::cout << std::endl
 		<< "Total clips in collection: " << clipCount << std::endl
-		<< "Press any key to return to menu." << std::endl;
+		<< "Input a valid clip number to plot its graph. Input anything else to return to menu." << std::endl;
 }
 
 inline void AppController::PrintErrorString()
@@ -317,7 +338,7 @@ inline bool AppController::CheckIfNameIsUnique(const std::string * const str)
 {
 	for (std::vector<AudioClip*>::iterator it = _clips.begin(); it != _clips.end(); ++it)
 	{
-		if ((*it)->GetName() == *str)
+		if (*(*it)->GetName() == *str)
 		{
 			return false;
 		}
