@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "AppController.h"
-
+#include "MFCC.h"
 #include "AudioClip.h"
 
 
@@ -202,6 +202,8 @@ void AppController::Run()
 			}
 
 			// here recognition will take place
+			MFCC mel;
+			mel.CreateMFCCVector(ac);
 
 			std::string temp = "Not implemented";
 			PrintRecognizeEnd(&temp);
