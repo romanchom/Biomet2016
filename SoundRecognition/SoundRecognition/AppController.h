@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Chart.h"
+#include "NoiseRecorder.h"
 
 #define ClearScreen() system("cls")
 
@@ -19,7 +20,8 @@ private:
 	const char CH_SELECT_RECORD = '1';
 	const char CH_SELECT_RECOGNIZE = '2';
 	const char CH_SELECT_LIST = '3';
-	const char CH_SELECT_EXIT = '4';
+	const char CH_SELECT_NOISE = '4';
+	const char CH_SELECT_EXIT = '5';
 
 	const std::string CLIPS_PATH = ".\\Samples\\";
 
@@ -34,7 +36,8 @@ private:
 		MENU,
 		LIST,
 		RECORD,
-		RECOGNIZE
+		RECOGNIZE,
+		NOISE
 	};
 
 #pragma endregion
@@ -46,6 +49,7 @@ private:
 	MenuMode _mode;
 	std::vector<AudioClip*> _clips;
 	Chart _chart;
+	NoiseRecorder _noiseRecorder;
 
 #pragma endregion
 
@@ -58,6 +62,9 @@ private:
 	inline void PrintRecognizeBegin();
 	inline void PrintRecognizeEnd(const std::string* const result);
 	inline void PrintClipCollection();
+	inline void PrintNoiseRecordBegin();
+	inline void PrintNoiseRecordMiddle();
+	inline void PrintNoiseRecordEnd();
 	inline void PrintErrorString();
 	inline void ClearErrorString();
 	inline void SetErrorString(std::string str);

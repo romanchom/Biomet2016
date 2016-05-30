@@ -12,10 +12,11 @@ AudioClip::~AudioClip()
 {
 }
 
-void AudioClip::InitializeFromMic(const std::string* const name, const std::string* const clipsPath)
+void AudioClip::InitializeFromMic(const std::string* const name, const std::string* const clipsPath, short noiseLevel)
 {
 	_name = *name;
 	_fullFilePath = *clipsPath + *name + ".wav";
+	_noiseLevel = noiseLevel;
 	_wasLoadedFromFile = false;
 
 	PaDeviceIndex mic = Pa_GetDefaultInputDevice();
@@ -85,10 +86,17 @@ void AudioClip::StopInitializingFromMic()
 {
 	Pa_StopStream(_streamPtr);
 	Pa_CloseStream(_streamPtr);
+
+	CutoutNoise(_noiseLevel);
 }
 
 void AudioClip::Shutdown()
 {
+	ZeroMemory(&_dataInfo, sizeof(_dataInfo));
+	_data.clear();
+	_dataSize = 0;
+	_name.clear();
+	_fullFilePath.clear();
 
 }
 
@@ -114,6 +122,62 @@ int AudioClip::StreamCallback(const void * input, void * output, unsigned long f
 	instance->_dataSize = instance->_dataInfo.frames;
 
 	return paContinue;
+}
+
+void AudioClip::CutoutNoise(short noiseLevel)
+{
+	bool windowBegin = false;
+	unsigned long windowLength = 0;
+
+	std::vector<short> newData;
+
+		for (unsigned long i = 0; i < _dataSize; ++i)
+		{
+			//// beginning of noise window
+			//if (abs(_data[i]) <= noiseLevel && !windowBegin)
+			//{
+			//	windowBegin = true;
+			//}
+			//// end of noise window
+			//else if (abs(_data[i]) <= noiseLevel && abs(_data[i + 1]) > noiseLevel && windowBegin)
+			//{
+			//	//// window is long enough - let's assign it to be cut out
+			//	//if (windowLastID - windowBeginID >= NOISE_MIN_LENGTH)
+			//	//{
+			//	//	for (unsigned long j = windowBeginID; j <= windowLastID; ++j)
+			//	//	{
+			//	//		noiseIDs.push_back(j);
+			//	//	}
+			//	//}
+
+			//	windowBegin = false;
+			//}
+			//else
+
+			if (abs(_data[i]) <= noiseLevel)
+			{
+				windowLength = 0;
+				for (unsigned long j = i; j < _dataSize; ++j)
+				{
+					++windowLength;
+					if (abs(_data[j]) > noiseLevel)
+					{
+						break;
+					}
+				}
+
+				if (windowLength >= NOISE_MIN_LENGTH)
+				{
+					i += (windowLength - 1);
+				}
+			}
+
+
+			newData.push_back(_data[i]);
+		}
+
+		_data = newData;
+		_dataSize = newData.size();
 }
 
 void AudioClip::ToString(std::string * const str)

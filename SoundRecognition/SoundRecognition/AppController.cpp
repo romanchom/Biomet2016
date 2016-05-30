@@ -2,6 +2,7 @@
 #include "AppController.h"
 #include "MFCC.h"
 #include "AudioClip.h"
+#include "NoiseRecorder.h"
 
 
 AppController::AppController()
@@ -32,6 +33,8 @@ void AppController::Initialize()
 		std::cout << "PortAudio Initialized. Press any key to continue.";
 		while (!_kbhit());
 	}
+
+	_noiseRecorder.Initialize();
 }
 
 void AppController::Run()
@@ -63,6 +66,10 @@ void AppController::Run()
 			else if (selection == CH_SELECT_LIST)
 			{
 				_mode = LIST;
+			}
+			else if (selection == CH_SELECT_NOISE)
+			{
+				_mode = NOISE;
 			}
 			else if (selection == CH_SELECT_EXIT)
 			{
@@ -101,7 +108,7 @@ void AppController::Run()
 			// here will recording start
 
 			AudioClip* ac = new AudioClip();
-			ac->InitializeFromMic(&newName, &CLIPS_PATH);
+			ac->InitializeFromMic(&newName, &CLIPS_PATH, _noiseRecorder.GetNoiseAmplitude());
 
 			bool esc = false;
 			while (true)
@@ -168,7 +175,7 @@ void AppController::Run()
 
 			std::string tempName = "REC_CLIP";
 			AudioClip* ac = new AudioClip();
-			ac->InitializeFromMic(&tempName, &CLIPS_PATH);
+			ac->InitializeFromMic(&tempName, &CLIPS_PATH, _noiseRecorder.GetNoiseAmplitude());
 
 			bool esc = false;
 			while (true)
@@ -235,7 +242,7 @@ void AppController::Run()
 				if (!(*p) && id >= 0 && id < _clips.size())
 				{
 					AudioClip* first = _clips[id];
-					_chart.Initialize(first->GetDataBufferPtr(), (double)first->GetDataSize() / (double)first->GetSampleRate(), first->GetName());
+					_chart.Initialize(first->GetDataBufferPtr(), first->GetTimeSeconds(), first->GetName());
 					_chart.Draw();
 				}
 				else
@@ -243,6 +250,49 @@ void AppController::Run()
 					break;
 				}
 			}
+			_mode = MENU;
+		}
+		break;
+
+		case AppController::NOISE:
+		{
+			PrintNoiseRecordBegin();
+
+			bool any = false;
+			while (true)
+			{
+				while (!_kbhit());
+				selection = _getch();
+
+				if (selection == CH_ESC)
+				{
+					any = true;
+					break;
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			if (any)
+			{
+				_mode = MENU;
+				break;
+			}
+
+			PrintNoiseRecordMiddle();
+			_noiseRecorder.StartRecord();
+
+			while (!_kbhit());
+			selection = _getch();
+
+			_noiseRecorder.StopRecord();
+
+			PrintNoiseRecordEnd();
+
+			while (!_kbhit()) ;
+			selection = _getch();
 			_mode = MENU;
 		}
 		break;
@@ -259,6 +309,7 @@ void AppController::Run()
 void AppController::Shutdown()
 {
 	_chart.Shutdown();
+	_noiseRecorder.Shutdown();
 	Pa_Terminate();
 
 	SaveToDiskAndDestroyCollection();
@@ -269,6 +320,7 @@ void AppController::PrintMenu()
 	std::cout << "[" << CH_SELECT_RECORD << "] Record sample" << std::endl
 		<< "[" << CH_SELECT_RECOGNIZE << "] Recognize words" << std::endl
 		<< "[" << CH_SELECT_LIST << "] Show clip collection" << std::endl
+		<< "[" << CH_SELECT_NOISE << "] Capture noise" << std::endl
 		<< "[" << CH_SELECT_EXIT << "] Exit program" << std::endl;
 }
 
@@ -316,6 +368,23 @@ inline void AppController::PrintClipCollection()
 	std::cout << std::endl
 		<< "Total clips in collection: " << clipCount << std::endl
 		<< "Input a valid clip number to plot its graph. Input anything else to return to menu." << std::endl;
+}
+
+inline void AppController::PrintNoiseRecordBegin()
+{
+	std::cout << "Press any key to start noise recording or press ESC to cancel." << std::endl
+		<< "Currently noise max amplitude is: " << _noiseRecorder.GetNoiseAmplitude() << std::endl;
+}
+
+inline void AppController::PrintNoiseRecordMiddle()
+{
+	std::cout << "Noise recording in progress... Press any key to cancel." << std::endl;
+}
+
+inline void AppController::PrintNoiseRecordEnd()
+{
+	std::cout << "Noise recording finished. Press any key to return to menu." << std::endl
+		<< "Currently noise max amplitude is: " << _noiseRecorder.GetNoiseAmplitude() << std::endl;
 }
 
 inline void AppController::PrintErrorString()

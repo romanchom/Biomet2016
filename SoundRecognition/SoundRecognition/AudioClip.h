@@ -11,6 +11,7 @@ protected:
 	const int DESIRED_FORMAT = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
 	const int DESIRED_FORMAT_PA = paInt16 | paNonInterleaved; 
 	const int FRAMES_PER_BUFFER = 0;
+	const int NOISE_MIN_LENGTH = 4410;
 
 #pragma endregion
 
@@ -24,6 +25,8 @@ protected:
 	unsigned long _dataSize = 0;
 	SF_INFO _dataInfo;
 
+	short _noiseLevel;
+
 	PaStream* _streamPtr = nullptr;
 
 #pragma endregion
@@ -31,6 +34,8 @@ protected:
 #pragma region functionsProtected
 
 	static int StreamCallback(const void *input, void *output, unsigned long frameCount, const PaStreamCallbackTimeInfo *timeInfo, PaStreamCallbackFlags statusFlags, void *userData);
+
+	void CutoutNoise(short noiseLevel);
 
 #pragma endregion
 
@@ -40,7 +45,7 @@ public:
 
 #pragma region functionsPublic
 
-	void InitializeFromMic(const std::string* const name, const std::string* const clipsPath);
+	void InitializeFromMic(const std::string* const name, const std::string* const clipsPath, short noiseLevel);
 	void InitializeFromFile(const std::string* const name, const std::string* const fullFilePath);
 	void SaveToFileAudio();
 
@@ -60,6 +65,7 @@ public:
 	const std::vector<short>* const GetDataBufferPtr() { return &_data; }
 	unsigned long GetDataSize() { return _dataSize; }
 	int GetSampleRate() { return _dataInfo.samplerate; }
+	double GetTimeSeconds() { return (double)_dataSize / (double)_dataInfo.samplerate; }
 
 #pragma endregion
 
