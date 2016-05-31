@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "MFCC.h"
 
+#include "kiss_fft.h"
+
 MFCC::MFCC()
 {
 }
@@ -33,7 +35,7 @@ void MFCC::HammingWindowing()
 {
 	do
 	{
-		frameLength++;
+		frameLength++;											// here goes infinite loop
 	} while (preemphasisVector.size() % frameLength != 0);
 
 	for (int i = 0; i < preemphasisVector.size() / frameLength; ++i)
@@ -48,7 +50,9 @@ void MFCC::HammingWindowing()
 
 void MFCC::FFT()
 {
-	//use some external lib for fft
+	kiss_fft_cfg fftCfg = kiss_fft_alloc(1024, 0, NULL, NULL);
+
+	kiss_fft_free(fftCfg);
 }
 
 void MFCC::Filtering()

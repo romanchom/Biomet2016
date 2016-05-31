@@ -151,15 +151,28 @@
     <ClInclude Include="AudioClip.h" />
     <ClInclude Include="Chart.h" />
     <ClInclude Include="gnuplot_i.hpp" />
+    <ClInclude Include="kfc.h" />
+    <ClInclude Include="kissfft.hh" />
+    <ClInclude Include="kiss_fft.h" />
+    <ClInclude Include="kiss_fftnd.h" />
+    <ClInclude Include="kiss_fftndr.h" />
+    <ClInclude Include="kiss_fftr.h" />
     <ClInclude Include="MFCC.h" />
     <ClInclude Include="NoiseRecorder.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="_kiss_fft_guts.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AppController.cpp" />
     <ClCompile Include="AudioClip.cpp" />
     <ClCompile Include="Chart.cpp" />
+    <ClCompile Include="kfc.cpp" />
+    <ClCompile Include="kiss_fastfir.cpp" />
+    <ClCompile Include="kiss_fft.cpp" />
+    <ClCompile Include="kiss_fftnd.cpp" />
+    <ClCompile Include="kiss_fftndr.cpp" />
+    <ClCompile Include="kiss_fftr.cpp" />
     <ClCompile Include="MFCC.cpp" />
     <ClCompile Include="NoiseRecorder.cpp" />
     <ClCompile Include="SoundRecognition.cpp" />
