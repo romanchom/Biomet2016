@@ -10,3 +10,11 @@ SoundRecognition/SoundRecognition/Release/
 SoundRecognition/SoundRecognition/Samples/desktop.ini
 *.idb
 *.rar
+*.suo
+*.opendb
+*.obj
+*.log
+*.pch
+*.enc
+*.pdb
+*.ipch

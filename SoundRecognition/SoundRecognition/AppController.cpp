@@ -210,7 +210,7 @@ void AppController::Run()
 
 			// here recognition will take place
 			MFCC mel;
-			mel.CreateMFCCVector(ac);
+			mel.CreateMFCCCoefficients(ac);
 
 			std::string temp = "Not implemented";
 			PrintRecognizeEnd(&temp);
