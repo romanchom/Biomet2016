@@ -76,7 +76,7 @@ void SignalFrame::HammingWindowing()
 		//helpVector[i] = std::abs(helpVector[i]);
 		//Fixing equilibrium. A 16 bit sound has a sample values ranging from -32768 to 32767. Adding 32768 to every sample fixes equilibrium from 0 to 32768
 		//helpVector[i] += 32768;
-		helpVector[i] *= HammingAlpha - (HammingBeta * cos((M_2_PI * i) / (size - 1)));
+		helpVector[i] *= HammingAlpha - (HammingBeta * cos((M_PI * 2 * i) / (size - 1)));
 	}
 
 	//std::cout << "MFCC: Hamming Windowing completed" << std::endl;
@@ -178,7 +178,7 @@ void SignalFrame::DCT()
 		double kos = 0;
 		for (int k = 0; k < K; ++k)
 		{
-			double cosArg = M_2_PI * (((2 * k + 1) * n) / (4 * K));
+			double cosArg = M_PI * 2 * (((2 * k + 1) * n) / (4 * K));
 			kos += amplitudeSpectrumVector[k] * std::cos(cosArg);
 		}
 		mfccCoefficients.push_back(kos);
