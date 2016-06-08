@@ -3,6 +3,7 @@
 #include "MFCC.h"
 #include "AudioClip.h"
 #include "NoiseRecorder.h"
+#include "DTW.h"
 
 
 AppController::AppController()
@@ -211,6 +212,8 @@ void AppController::Run()
 			// here recognition will take place
 			MFCC mel;
 			mel.CreateMFCCCoefficients(ac);
+
+			std::cout << distanceDTW(mel.mfcc, mel.mfcc, euclideanDistance) << std::endl;
 
 			std::string temp = "Not implemented";
 			PrintRecognizeEnd(&temp);

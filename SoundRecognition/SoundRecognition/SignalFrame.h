@@ -1,4 +1,7 @@
 #pragma once
+
+#include <array>
+
 #include "AudioClip.h"
 
 #include "kiss_fft.h"
@@ -40,7 +43,7 @@ public:
 		rk(r(k, d))
 	{}
 
-	float filterFunction(float f)
+	float operator()(float f)
 	{
 		if (f >= lk && f <= ck)
 		{
@@ -60,47 +63,50 @@ public:
 class SignalFrame
 {
 private:
-	const int MFCCParametersCount = 13;
+	static const float PreemphasisConst;
 
-	const float PreemphasisConst = 0.97;
-
-	const float HammingAlpha = 0.53836;
-	const float HammingBeta = 0.46164;
+	static const float HammingAlpha;
+	static const float HammingBeta;
 
 	//constants for filterings
-	const int K = 30;
-	const int d = 100;
 
-	const float LogYpsilon = 2;
-	const double Euler = 2.71828182845904523536;
+	static const float LogYpsilon;
+	static const float frequency;
 
-public:
-	int size = 1024;
-
-	std::vector<float> preemphasisVector;
+	kiss_fft_cfg fftCfg;
 	std::vector<Filter> filtersVector;
-	std::vector<float> amplitudeSpectrumVector;
-
+	
+	std::vector<kiss_fft_cpx> fftIn;
+	std::vector<kiss_fft_cpx> fftOut;
 	std::vector<float> helpVector;
-	std::vector<float> mfccCoefficients;
-
+	
+	std::vector<float> amplitudeSpectrumVector;
+	std::vector<float> hammingWindow;
+	std::vector<float> dctCache;
 public:
+	enum {
+		MFCCParametersCount = 13,
+		K = 30,
+		d = 100,
+		windowSize = 1024,
+	};
+public:
+	typedef std::array<float, MFCCParametersCount> MFCC_t;
 	SignalFrame();
 	~SignalFrame();
 
-	void CreateMFCCVector(AudioClip* ac);
+	MFCC_t CreateMFCCVector(const int16_t * data);
 	void PrintMFCCCoefficients();
 
 private:
 	void PrintEachStep(char* title, std::vector<float>& vector);
-	float ComplexAbs(float&, float&);
 
-	void Preemphasis(AudioClip* ac);
 	void HammingWindowing();
 	void FFT();
 	void CreateFilters();
 	void Filtering();
 	void EnergyLogarithm();
 	void DCT();
+
 };
 
