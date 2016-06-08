@@ -7,36 +7,41 @@ struct Filter
 {
 
 private:
-	float uFunction(float& m)
+	float ck;
+	float lk;
+	float rk;
+	float uFunction(float m)
 	{
 		return 700 * (pow(10, m / 2595) - 1);
 	}
 
-	float c(int& k, int& d)
+	float c(int k, int d)
 	{
 		float arg = k * d;
 		return uFunction(arg);
 	}
 
-	float l(int& k, int& d)
+	float l(int k, int d)
 	{
 		float arg = (k - 1) * d;
 		return uFunction(arg);
 	}
 
-	float r(int& k, int& d)
+	float r(int k, int d)
 	{
 		float arg = (k + 1) * d;
 		return uFunction(arg);
 	}
 
 public:
-	float filterFunction(float& f, int& k, int d)
-	{
-		float ck = c(k, d);
-		float lk = l(k, d);
-		float rk = r(k, d);
+	Filter(int k, int d) :
+		ck(c(k, d)),
+		lk(l(k, d)),
+		rk(r(k, d))
+	{}
 
+	float filterFunction(float f)
+	{
 		if (f >= lk && f <= ck)
 		{
 			return (f - lk) / (ck - lk);

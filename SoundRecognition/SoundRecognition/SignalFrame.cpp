@@ -123,10 +123,8 @@ void SignalFrame::FFT()
 
 void SignalFrame::CreateFilters()
 {
-	for (int k = 1; k <= K; ++k)
-	{
-		Filter filter;
-		filtersVector.push_back(filter);
+	for (int k = 1; k <= K; ++k) {
+		filtersVector.emplace_back(K, d);
 	}
 }
 
@@ -136,7 +134,6 @@ void SignalFrame::Filtering()
 
 	//44100 because I don't want to access the const value from audioclip (it's protected anyway)
 	float filterArg;
-	Filter filter;
 
 	for (int k = 1; k <= K; ++k)
 	{
@@ -144,7 +141,7 @@ void SignalFrame::Filtering()
 		for (int i = 0; i <= helpVector.size() / 2; ++i)
 		{
 			filterArg = (44100.0f / helpVector.size()) * i;
-			amplitudeSpectrumVector[k - 1] += helpVector[i] * filter.filterFunction(filterArg, k, d);
+			amplitudeSpectrumVector[k - 1] += helpVector[i] * filtersVector[k].filterFunction(filterArg);
 		}
 	}
 
