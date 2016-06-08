@@ -7,8 +7,8 @@ struct Filter
 {
 
 private:
-	float ck;
 	float lk;
+	float ck;
 	float rk;
 	float uFunction(float m)
 	{
@@ -35,8 +35,8 @@ private:
 
 public:
 	Filter(int k, int d) :
-		ck(c(k, d)),
 		lk(l(k, d)),
+		ck(c(k, d)),
 		rk(r(k, d))
 	{}
 
