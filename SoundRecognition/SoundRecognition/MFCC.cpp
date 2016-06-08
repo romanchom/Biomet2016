@@ -22,6 +22,7 @@ void MFCC::CreateMFCCCoefficients(AudioClip* ac)
 		{
 			framedSignal[i].CreateMFCCVector(ac);
 			//framedSignal[i].PrintMFCCCoefficients();
+			mfcc.push_back(framedSignal[i].mfccCoefficients);
 		}
 	}
 	else

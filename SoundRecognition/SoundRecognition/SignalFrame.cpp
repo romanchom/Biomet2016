@@ -175,10 +175,10 @@ void SignalFrame::DCT()
 
 	for (int n = 0; n < MFCCParametersCount; ++n)
 	{
-		double kos = 0;
+		float kos = 0;
 		for (int k = 0; k < K; ++k)
 		{
-			double cosArg = M_PI * 2 * (((2 * k + 1) * n) / (4 * K));
+			float cosArg = M_PI * 2.0f * (((2.0f * k + 1.0f) * (n + 1.0f)) / (4.0f * K));
 			kos += amplitudeSpectrumVector[k] * std::cos(cosArg);
 		}
 		mfccCoefficients.push_back(kos);

@@ -34,3 +34,16 @@ ret_t distanceDTW(const std::vector<obj_t> & a, const std::vector<obj_t> & b, di
 
 	return DTWTable.back();
 }
+
+double euclideanDistance(const std::vector<float> &a, const std::vector<float> &b)
+{
+	double out = 0;
+	const int as = a.size();
+
+	for (int i = 0; i < as; ++i)
+	{
+		out += (a[i] - b[i]) * (a[i] - b[i]);
+	}
+
+	return std::sqrt(out);
+}

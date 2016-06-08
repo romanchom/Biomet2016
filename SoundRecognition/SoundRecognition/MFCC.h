@@ -4,8 +4,9 @@
 
 class MFCC
 {
-protected:
+public:
 	std::vector<SignalFrame> framedSignal;
+	std::vector<std::vector<float>> mfcc;
 
 public:
 	MFCC();
