@@ -150,6 +150,7 @@
     <ClInclude Include="AppController.h" />
     <ClInclude Include="AudioClip.h" />
     <ClInclude Include="Chart.h" />
+    <ClInclude Include="ClipComparator.h" />
     <ClInclude Include="DTW.h" />
     <ClInclude Include="gnuplot_i.hpp" />
     <ClInclude Include="kfc.h" />
@@ -169,6 +170,7 @@
     <ClCompile Include="AppController.cpp" />
     <ClCompile Include="AudioClip.cpp" />
     <ClCompile Include="Chart.cpp" />
+    <ClCompile Include="ClipComparator.cpp" />
     <ClCompile Include="kfc.cpp" />
     <ClCompile Include="kiss_fastfir.cpp" />
     <ClCompile Include="kiss_fft.cpp" />

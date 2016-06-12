@@ -1,5 +1,9 @@
 #pragma once
 
+#include "MFCC.h"
+
+class MFCC;
+
 class AudioClip
 {
 protected:
@@ -24,6 +28,8 @@ protected:
 	std::vector<short> _data;
 	unsigned long _dataSize = 0;
 	SF_INFO _dataInfo;
+
+	MFCC _mfcc;
 
 	short _noiseLevel;
 
@@ -55,6 +61,8 @@ public:
 
 	void ToString(std::string* const str);
 
+	double GetDTWDistance(const AudioClip* const other) const;
+
 #pragma endregion
 
 #pragma region Getters
@@ -66,6 +74,7 @@ public:
 	unsigned long GetDataSize() { return _dataSize; }
 	int GetSampleRate() { return _dataInfo.samplerate; }
 	double GetTimeSeconds() { return (double)_dataSize / (double)_dataInfo.samplerate; }
+	const MFCC* const GetMelCoefficents() { return &_mfcc; }
 
 #pragma endregion
 

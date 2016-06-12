@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "MFCC.h"
+#include "AudioClip.h"
 
 #include <chrono>
 

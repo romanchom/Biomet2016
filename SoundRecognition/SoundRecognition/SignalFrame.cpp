@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "SignalFrame.h"
-
+#include "AudioClip.h"
 
 const float SignalFrame::PreemphasisConst = 0.97;
 const float SignalFrame::HammingAlpha = 0.53836;

@@ -2,8 +2,6 @@
 
 #include <array>
 
-#include "AudioClip.h"
-
 #include "kiss_fft.h"
 
 struct Filter

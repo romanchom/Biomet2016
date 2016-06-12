@@ -36,6 +36,8 @@ void AppController::Initialize()
 	}
 
 	_noiseRecorder.Initialize();
+
+	_clipComparator.Initialize(&_clips);
 }
 
 void AppController::Run()
@@ -63,6 +65,10 @@ void AppController::Run()
 			else if (selection == CH_SELECT_RECOGNIZE)
 			{
 				_mode = RECOGNIZE;
+			}
+			else if (selection == CH_SELECT_RECOGNIZE_DATABASE)
+			{
+				_mode = RECOGNIZE_DATABASE;
 			}
 			else if (selection == CH_SELECT_LIST)
 			{
@@ -210,13 +216,18 @@ void AppController::Run()
 			}
 
 			// here recognition will take place
+			/*
 			MFCC mel;
 			mel.CreateMFCCCoefficients(ac);
 
 			std::cout << distanceDTW(mel.mfcc, mel.mfcc, euclideanDistance) << std::endl;
+			*/
 
-			std::string temp = "Not implemented";
-			PrintRecognizeEnd(&temp);
+			std::string temp;
+			int grzegorz;
+			_clipComparator.ClipToString(ac, &temp, &grzegorz);
+
+			PrintRecognizeEnd(&temp, grzegorz);
 
 			while (!_kbhit());
 			selection = _getch();
@@ -225,6 +236,37 @@ void AppController::Run()
 			{
 				_mode = MENU;
 			}
+		}
+		break;
+
+		case AppController::RECOGNIZE_DATABASE:
+		{
+			PrintRecDatabaseBegin();
+
+			int id = -1;
+			std::string input;
+			std::string result;
+			int resultProbes;
+			while (true)
+			{
+				std::cin.clear();
+				std::cin >> input;
+				char* p;
+				id = std::strtol(input.c_str(), &p, 10);
+
+				if (!(*p) && id >= 0 && id < _clips.size())
+				{
+					AudioClip* first = _clips[id];
+					_clipComparator.ClipToString(first, &result, &resultProbes);
+
+					PrintRecDatabaseEnd(&result, resultProbes);
+				}
+				else
+				{
+					break;
+				}
+			}
+			_mode = MENU;
 		}
 		break;
 
@@ -313,6 +355,7 @@ void AppController::Shutdown()
 {
 	_chart.Shutdown();
 	_noiseRecorder.Shutdown();
+	_clipComparator.Shutdown();
 	Pa_Terminate();
 
 	SaveToDiskAndDestroyCollection();
@@ -321,7 +364,8 @@ void AppController::Shutdown()
 void AppController::PrintMenu()
 {
 	std::cout << "[" << CH_SELECT_RECORD << "] Record sample" << std::endl
-		<< "[" << CH_SELECT_RECOGNIZE << "] Recognize words" << std::endl
+		<< "[" << CH_SELECT_RECOGNIZE << "] Recognize from mic" << std::endl
+		<< "[" << CH_SELECT_RECOGNIZE_DATABASE << "] Recognize from database" << std::endl
 		<< "[" << CH_SELECT_LIST << "] Show clip collection" << std::endl
 		<< "[" << CH_SELECT_NOISE << "] Capture noise" << std::endl
 		<< "[" << CH_SELECT_EXIT << "] Exit program" << std::endl;
@@ -350,10 +394,32 @@ inline void AppController::PrintRecognizeBegin()
 				<< "Press ENTER to finish and show recognition results. Press ESC to return to menu." << std::endl;
 }
 
-inline void AppController::PrintRecognizeEnd(const std::string* const result)
+inline void AppController::PrintRecognizeEnd(const std::string* const result, int successes)
 {
-	std::cout << "Recognized word is: " << *result << std::endl 
+	std::cout << "Recognized word is: " << *result << " with " << " matches in database." << std::endl 
 				<< "Press ESC to return to menu or any key to recognize again." << std::endl;
+}
+
+inline void AppController::PrintRecDatabaseBegin()
+{
+	int clipCount = _clips.size();
+	std::string tmp;
+	tmp.clear();
+	for (int i = 0; i < clipCount; ++i)
+	{
+		_clips[i]->ToString(&tmp);
+		std::cout << "[" << i << "]" << std::endl << tmp << std::endl;
+		tmp.clear();
+	}
+
+	std::cout << std::endl
+		<< "Input a valid clip number to compare it with other ones. Input anything else to return to menu." << std::endl;
+}
+
+inline void AppController::PrintRecDatabaseEnd(const std::string * const result, int resultProbes)
+{
+	std::cout << "Result: " << *result << " with " << resultProbes << " positive matches." << std::endl
+		<< "Input a valid clip number to compare it with other ones. Input anything else to return to menu." << std::endl;
 }
 
 inline void AppController::PrintClipCollection()

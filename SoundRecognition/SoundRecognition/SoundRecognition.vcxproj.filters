@@ -84,6 +84,9 @@
     <ClInclude Include="DTW.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ClipComparator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -126,6 +129,9 @@
       <Filter>Source Files\kissFFT\tools</Filter>
     </ClCompile>
     <ClCompile Include="SignalFrame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ClipComparator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -2,10 +2,9 @@
 
 #include <array>
 
-#include "AudioClip.h"
 #include "SignalFrame.h"
 
-
+class AudioClip;
 
 double euclideanDistance(const SignalFrame::MFCC_t & a, const SignalFrame::MFCC_t & b);
 

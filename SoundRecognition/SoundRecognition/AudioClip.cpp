@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "AudioClip.h"
-
+#include "DTW.h"
 
 AudioClip::AudioClip()
 {
@@ -63,6 +63,8 @@ void AudioClip::InitializeFromFile(const std::string* const name, const std::str
 	_data.resize(_dataSize);
 	sf_readf_short(file, &(*_data.begin()), _dataSize);
 	sf_close(file);
+
+	_mfcc.CreateMFCCCoefficients(this);
 }
 
 void AudioClip::SaveToFileAudio()
@@ -187,4 +189,9 @@ void AudioClip::ToString(std::string * const str)
 		+ "Format: " + std::to_string(_dataInfo.format) + "\n"
 		+ "Sample rate [Hz]: " + std::to_string(_dataInfo.samplerate) + "\n"
 		+ "Frame count: " + std::to_string(_dataInfo.frames) + "\n";
+}
+
+double AudioClip::GetDTWDistance(const AudioClip * const other) const
+{
+	return distanceDTW(_mfcc.mfcc, other->_mfcc.mfcc, euclideanDistance);
 }

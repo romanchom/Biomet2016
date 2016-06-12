@@ -2,6 +2,7 @@
 
 #include "Chart.h"
 #include "NoiseRecorder.h"
+#include "ClipComparator.h"
 
 #define ClearScreen() system("cls")
 
@@ -19,9 +20,10 @@ private:
 	const char CH_NO = 'n';
 	const char CH_SELECT_RECORD = '1';
 	const char CH_SELECT_RECOGNIZE = '2';
-	const char CH_SELECT_LIST = '3';
-	const char CH_SELECT_NOISE = '4';
-	const char CH_SELECT_EXIT = '5';
+	const char CH_SELECT_RECOGNIZE_DATABASE = '3';
+	const char CH_SELECT_LIST = '4';
+	const char CH_SELECT_NOISE = '5';
+	const char CH_SELECT_EXIT = '6';
 
 	const std::string CLIPS_PATH = ".\\Samples\\";
 
@@ -37,6 +39,7 @@ private:
 		LIST,
 		RECORD,
 		RECOGNIZE,
+		RECOGNIZE_DATABASE,
 		NOISE
 	};
 
@@ -50,6 +53,7 @@ private:
 	std::vector<AudioClip*> _clips;
 	Chart _chart;
 	NoiseRecorder _noiseRecorder;
+	ClipComparator _clipComparator;
 
 #pragma endregion
 
@@ -60,7 +64,9 @@ private:
 	inline void PrintRecordMiddle();
 	inline void PrintRecordEnd();
 	inline void PrintRecognizeBegin();
-	inline void PrintRecognizeEnd(const std::string* const result);
+	inline void PrintRecognizeEnd(const std::string* const result, int successes);
+	inline void PrintRecDatabaseBegin();
+	inline void PrintRecDatabaseEnd(const std::string* const result, int resultProbes);
 	inline void PrintClipCollection();
 	inline void PrintNoiseRecordBegin();
 	inline void PrintNoiseRecordMiddle();
