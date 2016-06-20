@@ -1,22 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\Users\Roman\Documents\Biomet2016\imgRec\Descriptor.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Users\Roman\Documents\Biomet2016\imgRec\ImageFilter.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Users\Roman\Documents\Biomet2016\imgRec\ImageProcessor.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Users\Roman\Documents\Biomet2016\imgRec\main.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Users\Roman\Documents\Biomet2016\imgRec\PatternBase.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="GestureEngine.cpp" />
+    <ClCompile Include="Descriptor.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFilter.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="PatternBase.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headers">
@@ -31,9 +28,6 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="ImageFilter.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="ImageProcessor.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="PatternBase.h">

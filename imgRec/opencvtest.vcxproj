@@ -498,18 +498,16 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Users\Roman\Documents\Biomet2016\imgRec\Descriptor.cpp" />
-    <ClCompile Include="C:\Users\Roman\Documents\Biomet2016\imgRec\ImageFilter.cpp" />
-    <ClCompile Include="C:\Users\Roman\Documents\Biomet2016\imgRec\ImageProcessor.cpp" />
-    <ClCompile Include="C:\Users\Roman\Documents\Biomet2016\imgRec\main.cpp" />
-    <ClCompile Include="C:\Users\Roman\Documents\Biomet2016\imgRec\PatternBase.cpp" />
+    <ClCompile Include="Descriptor.cpp" />
     <ClCompile Include="GestureEngine.cpp" />
+    <ClCompile Include="ImageFilter.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="PatternBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Descriptor.h" />
     <ClInclude Include="GestureEngine.h" />
     <ClInclude Include="ImageFilter.h" />
-    <ClInclude Include="ImageProcessor.h" />
     <ClInclude Include="PatternBase.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
