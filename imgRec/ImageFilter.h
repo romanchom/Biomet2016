@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <vector>
 #include <opencv2/opencv.hpp>
 
@@ -14,10 +15,14 @@ private:
 
 	cv::Mat temp;
 	cv::Mat hsvFrame;
+	
+	void init();
 public:
 	cv::Mat frame;
 
 	ImageFilter();
+	ImageFilter(const std::string & url);
+	bool isGood();
 	~ImageFilter();
 	void sampleTrackedColor();
 	void getTrackedContours();

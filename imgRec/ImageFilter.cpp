@@ -6,11 +6,22 @@
 ImageFilter::ImageFilter() :
 	cap(0)
 {
+	init();
+}
+
+ImageFilter::ImageFilter(const std::string & url) :
+	cap(url)
+{
+	init();
+}
+
+ImageFilter::~ImageFilter(){
+
+}
+
+void ImageFilter::init(){
 	cv::namedWindow("preview",1);
 
-	/*cv::namedWindow("hue", 1);
-	cv::namedWindow("sat", 1);
-	cv::namedWindow("val", 1);*/
 	cap >> frame;
 	for(int i = 0; i < 3; ++i){
 		for(int j = 0; j < 3; ++j){
@@ -21,8 +32,8 @@ ImageFilter::ImageFilter() :
 	}
 }
 
-ImageFilter::~ImageFilter(){
-
+bool ImageFilter::isGood(){
+	return cap.isOpened();
 }
 
 void ImageFilter::sampleTrackedColor(){

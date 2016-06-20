@@ -6,19 +6,32 @@
 #include "Descriptor.h"
 #include "GestureEngine.h"
 
-
 int main()
 {	
 	PatternBase base("patterns.txt", "classes.txt");
 	GestureEngine gestureEngine;
 
-	ImageFilter filter;
-	filter.sampleTrackedColor();
+	ImageFilter * filter;
+	std::string url;
+	std::getline(std::cin, url);
+	if(url.empty()){
+		filter = new ImageFilter();
+	}else{
+		filter = new ImageFilter(url);
+	}
+	
+	if(!filter->isGood()){
+		std::cout << "Unable to open camera." << std::endl;
+		return -1;
+	}
+	
+	filter->sampleTrackedColor();
+	
 	do{
-		filter.getTrackedContours();
+		filter->getTrackedContours();
 		size_t bestLength = 0;
 		std::vector<cv::Point> * best = nullptr;
-		for (auto & contour : filter.contours)
+		for (auto & contour : filter->contours)
 		{
 			uint64_t length = contour.size();
 			if(length > bestLength){
@@ -30,15 +43,15 @@ int main()
 		if(key == 'q') break;
 		if (bestLength > 200) {
 			Descriptor desc(*best);
-			desc.drawCurvature(filter.frame);
-			desc.drawSignature(filter.frame);
-			desc.drawDescriptor(filter.frame);
+			desc.drawCurvature(filter->frame);
+			desc.drawSignature(filter->frame);
+			desc.drawDescriptor(filter->frame);
 			if(key == 'a') base.addNew();
 			std::string reco = base.classifyObject(desc.data, 2);
 			std::cout << reco << std::endl;
 			gestureEngine.processGesture(reco);
 		}
-		cv::imshow("preview", filter.frame);
+		cv::imshow("preview", filter->frame);
 	}while(true);
 	return 0;
 }
